@@ -126,7 +126,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     workingDirectory = var.task_definition_working_dir
     portMappings  = [{
       containerPort = var.container_port
-      hostPort      = var.egress_port
+      hostPort      = var.container_port
       protocol       = "tcp"
     }]
 
