@@ -2,6 +2,10 @@ variable "service_name" {
   type    = string
   default = "sc-ecs-service"
 }
+variable "alb_idle_timeout" {
+  type = number
+  default = 60
+}
 
 /*variable "hosted_zone_name" {
   type    = string
@@ -35,3 +39,7 @@ variable "alb_target_group_health_check_path" {
   default = "/heartbeat"
 }
 */
+variable "load_balancer_type" {
+  type = string
+  default = "application"
+}

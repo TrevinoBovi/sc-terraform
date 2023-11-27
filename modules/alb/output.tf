@@ -16,4 +16,15 @@ output "lb_http_listener_arn" {
 output "lb_https_listener_arn" {
   value    = aws_lb_listener.alb_listener_https.arn
 }
-
+output "alb_name" {
+  value    = aws_lb.application_load_balancer.name
+}
+output "alb_id" {
+  value    = aws_lb.application_load_balancer.id
+}
+output "alb_name_prefix" {
+  value    = aws_lb.application_load_balancer.name_prefix
+}
+output "alb_arn_suffix" {
+  value    = aws_lb.application_load_balancer.arn_suffix
+}
