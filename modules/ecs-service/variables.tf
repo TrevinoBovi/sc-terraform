@@ -61,6 +61,10 @@ variable "container_port" {
   type    = number
   default = 80
 }
+variable "egress_port" {
+  type   = number
+  default = 80
+}
 variable "extra_secrets" {
   type    = list(object({
     name = string
