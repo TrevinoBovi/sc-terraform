@@ -27,7 +27,7 @@ module "prod_env_shiporgetoffthepot_com_ecs_service" {
   env = "prod"
   vpc_id = var.env_info.vpc_id
   service_name = "sogotp-com-v1"
-  ecs_desired_task_count = 1
+  ecs_desired_task_count =55
   private_subnet_mappings = var.env_info.private_subnet_mappings
   // aws_lb_target_group_arns = [module.prod_env_shiporgetoffthepot_com_tg.aws_lb_target_group_arn]
   ecs_cluster_id = var.env_info.ecs_cluster.id
@@ -37,10 +37,12 @@ module "prod_env_shiporgetoffthepot_com_ecs_service" {
   ecr_image_uri = "${aws_ecr_repository.prod_ecr_repo.repository_url}:${var.env}"
   container_port = 80
   create_secrets = false
-  task_definition_environment_vars = [{
-    name: "NODE_ENV ",
-    value: var.env
-  }]
+  task_definition_environment_vars = [
+    {
+      name: "NODE_ENV ",
+      value: var.env
+    }
+  ]
 }
 module "buildpipeline" {
   source = "../../../../modules/buildpipeline"# "github.com/schematical/sc-terraform/modules/buildpipeline"
