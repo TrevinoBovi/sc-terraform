@@ -27,6 +27,11 @@ module "lambda_service" {
   env = var.env
   vpc_id = var.vpc_id
   private_subnet_mappings = var.private_subnet_mappings
+  env_vars = {
+    REACT_APP_SERVER_URL:  "https://${var.domain_name}.${var.hosted_zone_name}"
+    AUTH_CLIENT_ID: var.secrets.chaospixel_lambda_service_AUTH_CLIENT_ID
+    AUTH_USER_POOL_ID: var.secrets.chaospixel_lambda_service_AUTH_USER_POOL_ID
+  }
 /*  api_gateway_id = var.api_gateway_id
   api_gateway_parent_id = var.api_gateway_base_path_mapping
   api_gateway_stage_id = module.dev_env.api_gateway_stage_id
@@ -44,6 +49,35 @@ module "lambda_service" {
   handler = "handler.main"
 
 }
+
+resource "aws_iam_policy" "lambda_iam_policy" {
+  name = "schematical-com-v1-${var.env}-lambda"
+
+  policy = jsonencode(
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "DynamoDB",
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:Scan",
+            "dynamodb:GetItem",
+            "dynamodb:PutItem"
+          ],
+          "Resource": [
+            var.dynamodb_table_post_arn
+          ]
+        }
+
+      ]
+    }
+  )
+}
+resource "aws_iam_role_policy_attachment" "lambda_iam_policy_attach" {
+  role = module.lambda_service.iam_role.name
+  policy_arn = aws_iam_policy.lambda_iam_policy.arn
+}
 resource "aws_lambda_permission" "apigw_lambda" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
@@ -53,6 +87,7 @@ resource "aws_lambda_permission" "apigw_lambda" {
   # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
   source_arn = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${var.api_gateway_id}/*/*/*"
 }
+
 /*resource "aws_lambda_layer_version" "asset_lambda_layer" {
   s3_bucket = var.codepipeline_artifact_store_bucket.bucket
   s3_key = "schematical-com-v1-${var.env}/assetsLayer.zip"
@@ -87,6 +122,9 @@ module "buildpipeline" {
   private_subnet_mappings = var.private_subnet_mappings
   source_buildspec_path = "buildspec.yml"
   env_vars = {
+    REACT_APP_SERVER_URL:  "https://${var.domain_name}.${var.hosted_zone_name}"
+    AUTH_CLIENT_ID: var.secrets.chaospixel_lambda_service_AUTH_CLIENT_ID
+    AUTH_USER_POOL_ID: var.secrets.chaospixel_lambda_service_AUTH_USER_POOL_ID
   }
 
 }
