@@ -8,7 +8,7 @@ resource "aws_security_group" "task_security_group" {
   dynamic ingress  {
     for_each = var.ingress_security_groups
     content {
-      from_port       = var.egress_port
+      from_port       = var.container_port
       to_port         = var.container_port
       protocol        = "tcp"
       security_groups = [ingress.value]
@@ -148,7 +148,7 @@ resource "aws_ecs_service" "ecs_service" {
     ignore_changes = [
       # Ignore changes to tags, e.g. because a management agent
       # updates these based on some ruleset managed elsewhere.
-      # task_definition,
+      task_definition,
     ]
   }
   force_new_deployment = var.force_deployment
